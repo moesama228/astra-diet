@@ -1,0 +1,21 @@
+model = "gpt-5.5"
+model_reasoning_effort = "xhigh"
+personality = "pragmatic"
+
+notify = ["/bin/echo", "turn-ended"]
+
+[agents]
+max_concurrent_threads_per_session = 2
+default_subagent_model = "gpt-5.6-terra"
+default_subagent_reasoning_effort = "high"
+custom_unknown_key = "keep-me"
+
+[features.multi_agent_v2]
+hide_spawn_agent_metadata = false
+wait_agent_enabled = true
+
+[tui]
+status_line = ["model", "current-dir"]
+
+[projects."/tmp/example"]
+trust_level = "trusted"

@@ -1,0 +1,16 @@
+# BEGIN astra-diet
+[agents]
+# 子代理的模型与档位由 agents/default.toml 钉死，这里刻意不设 default_subagent_model：
+# 两者同时存在时 config 里的键会被静默忽略（实测：角色文件优先）。
+enabled = true
+
+[features.multi_agent_v2]
+# 父代理等待子代理的时间上限。默认 30000（30 秒）会让父代理每 30 秒醒来一次并重读整份上下文；
+# 一次实测里 47 次空轮询占掉了父线程 68% 的输入。这里用 25 分钟，刻意留在提示缓存
+# 30 分钟保留下限之内——GPT-5.6 起缓存写入本身也额外计费，所以"醒来次数"直接等于钱。
+min_wait_timeout_ms = {{WAIT_MS}}
+default_wait_timeout_ms = {{WAIT_MS}}
+max_wait_timeout_ms = {{WAIT_MS}}
+# 不让父代理挑选子代理的模型与档位：子代理一律走角色文件的钉位。
+expose_spawn_agent_model_overrides = false
+# END astra-diet

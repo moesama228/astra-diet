@@ -1,0 +1,8 @@
+name = "default"
+description = "我自己的默认探子"
+model = "gpt-5.4-mini"
+model_reasoning_effort = "low"
+sandbox_mode = "read-only"
+developer_instructions = """
+保留我原来的指令，不要覆盖。
+"""
