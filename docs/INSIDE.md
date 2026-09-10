@@ -36,10 +36,13 @@
 - 取 **25 分钟**的理由：GPT-5.6 起提示缓存的保留下限是 **30 分钟**（官方文档：`prompt_cache_options.ttl` 目前只支持 `"30m"`，含义是"最近一次写入**或复用**之后至少 30 分钟"）。25 分钟既消掉空轮询，又保证下次醒来时那十几万 token 仍命中缓存；睡过 30 分钟反而变成全价未压缩输入（且 GPT-5.6 起**缓存写入本身**也要按 1.25× 未缓存输入价计费）。
 - 三个值必须同时设：只设一个会回落到 30 秒。约束：`min <= default <= max`，范围 `[0, 3600000]`（源码，写反了 Codex 会拒绝启动）。
 
-### `[features.multi_agent_v2] expose_spawn_agent_model_overrides = false`
+### `[features.multi_agent_v2] expose_spawn_agent_model_overrides` —— 默认**不写**（保留升级余地）
 
-- 实测（A/B 真机对照）：`true`（默认）时父代理能填 `model` / `reasoning_effort`；`false` 时它的调用里只剩 `task_name` / `fork_turns` / `agent_type`，子代理的模型与档位**只能**来自角色文件。
-- 这就是"钉死成本"的关键：关掉它，父代理没有把子代理升级成贵模型的余地。
+- 实测（A/B 真机对照）：默认 `true` 时父代理能填 `model` / `reasoning_effort`；设成 `false` 时它的调用里只剩 `task_name` / `fork_turns` / `agent_type`，子代理的模型与档位**只能**来自角色文件。
+- 本工具默认**不写这个键**，即保留 `true`：需要时父代理（或你）可以显式把某个子代理升到更强 / 更贵的模型，例如疑难 bug、跨系统设计这类任务。
+- "默认不烧 Astra" 由 `agents/default.toml` 的钉位负责（泛型派生一律 Luna/medium），"需要时才升级"由显式调用负责。二者分工明确，互不冲突。
+- 想彻底钉死（父代理无权升级），手动加一行 `expose_spawn_agent_model_overrides = false`。
+- **版本注意**：该键自 `codex-cli 0.147` 起才存在。本表带 `deny_unknown_fields`，把它写到更早的版本上会让**整份 config 加载失败**（报 `data did not match any variant of untagged enum FeatureToml`）。等待三件套自 0.140 起就有。
 
 ### 刻意**不**设 `hide_spawn_agent_metadata`
 

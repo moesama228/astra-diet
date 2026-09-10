@@ -7,7 +7,7 @@
 
 | 目标（global 模式） | 内容 |
 |---|---|
-| `$CODEX_HOME/config.toml` | 根代理模型与档位、`[agents]`、`[features.multi_agent_v2]` 等待与路由开关 |
+| `$CODEX_HOME/config.toml` | 根代理模型与档位、`[agents]`、`[features.multi_agent_v2]` 等待上限（等待三件套） |
 | `$CODEX_HOME/AGENTS.md` | 子代理使用纪律（受管区块，前后有 `BEGIN/END astra-diet` 标记） |
 | `$CODEX_HOME/agents/default.toml` | 泛型子代理的角色文件：模型、档位、只读、返回格式 |
 
