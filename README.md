@@ -45,9 +45,10 @@ project 模式把同样三份写到 `<dir>/.codex/config.toml`、`<dir>/AGENTS.m
 
 - 需要 `codex-cli >= 0.150`（`[features.multi_agent_v2]` 与角色路由语义在该版本后稳定）。install 会检查并提醒。
 - project 模式的 `.codex/config.toml` 只对**受信任项目**生效，首次进入需在 Codex 里确认信任。
-- 本工具只写配置，不验证效果。要验证子代理是否真的落到你指定的模型，用
-  `~/.hermes/skills/autonomous-ai-agents/codex-subagent-routing-verification/` 里的探针（读 rollout 里的
-  `agent_role` / `turn_context.model`）。
+- 本工具只写配置，不验证效果。要确认子代理真的落到你钉的模型：开一个**新会话**让它派生一个子代理，
+  然后读 `~/.codex/sessions/YYYY/MM/DD/rollout-*.jsonl` —— 子代理线程首行的
+  `session_meta.source.subagent.thread_spawn.agent_role` 应为 `default`，其最后一条 `turn_context.model`
+  应为角色文件里钉的模型（而不是父代理的模型）。
 
 ## 目录
 
@@ -69,4 +70,11 @@ bash tests/selftest.sh     # 53 项，全部在 /tmp 沙箱里跑，不碰真实
 
 覆盖：合并进既有 config（保留未知键、不产生重复表）、幂等、dry-run 不落盘、回滚字节级还原、
 漂移保护、project 模式、模型名带引号的容错、非法档位/超范围等待值被拒。
-**未覆盖**：`AGENTS.md` 的写入路径（部分环境会拦截脚本生成 `AGENTS.md`，需单独确认后再测）。
+
+**已验证到生产环境**（2026-09-10，全局安装后实测）：安装只给 `config.toml` 增加了受管区块（20 行 diff），
+用户原有的 38 个 `[projects.*]`、MCP、plugins、`[desktop]`、`[tui]` 全部原样；泛型派生的子代理从
+"继承 Astra" 变成 `role=default / gpt-5.6-luna / medium`，且 `spawn_agent` 参数里不再出现 `model` /
+`reasoning_effort`（`expose_spawn_agent_model_overrides = false` 生效）。
+
+**仍未覆盖**：`AGENTS.md` 的"追加到已有用户内容"分支（安装时该文件不存在，走的是新建分支）；
+真实卸载只验过 dry-run 与沙箱。
