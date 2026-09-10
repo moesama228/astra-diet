@@ -479,7 +479,10 @@ def cmd_revert(a) -> int:
     print(f"\n汇总：还原 {restored}，删除 {deleted}，跳过 {skipped}" +
           ("（dry-run，未改动任何文件）" if a.dry_run else ""))
     if not a.dry_run:
-        print(f"备份目录保留未删，如需再装可直接复用：{backup}")
+        print(f"备份存档已保留（这是还原点，不是安装包）：{backup}")
+        print(f"  指定用它回滚：uninstall.sh --backup {backup}")
+        print(f"  校验当前状态：uninstall.sh --verify --backup {backup}")
+        print("  确认不需要后可直接删除该目录。")
     return 0
 
 

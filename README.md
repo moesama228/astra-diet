@@ -41,9 +41,27 @@ project 模式把同样三份写到 `<dir>/.codex/config.toml`、`<dir>/AGENTS.m
 - **危险动作前有闸门。** 回滚时若发现文件在安装后被改动过，默认跳过并提示，需 `--force`。
 - **不碰清单之外的东西。** 不删备份、不改 `.gitignore`、不动 MCP/plugins/notify/model_provider。
 
+## 备份存档是什么
+
+`backups/astra-diet-<时间戳>/` 是**还原点**，不是安装包：
+
+```
+config.toml.bak    安装前原文件的逐字节副本（只有被"修改"过的文件才有）
+manifest.json      每个目标文件是 modified 还是 created、改动前后 sha256、备份文件名
+```
+
+- 它是回滚的依据。回滚若跳过了某个文件（安装后你手工改过又没给 `--force`），这里是唯一还能手工恢复的来源。
+- **不会**包含安装时"新建"的文件的副本——那些文件卸载时直接删除，没有需要还原的旧内容。
+- 默认不删，也不影响下次安装（下次会新建一个时间戳目录）。
+- 想指定用某份存档：`uninstall.sh --backup <目录>`；想校验当前状态：`uninstall.sh --verify --backup <目录>`；确认不需要就 `rm -rf`。
+
 ## 前提与局限
 
-- 需要 `codex-cli >= 0.150`（`[features.multi_agent_v2]` 与角色路由语义在该版本后稳定）。install 会检查并提醒。
+- **版本兼容**：`[features.multi_agent_v2]` 的等待三件套自 `codex-cli 0.140` 起就存在，角色文件钉位也很早可用；
+  但 `expose_spawn_agent_model_overrides` 要 **0.147+**（更早的版本会让整份 config 加载失败，所以默认不写）。
+  install 会检查命令行版本并提醒。
+- **桌面版 ≠ 命令行**：Codex 桌面应用内置自己的 Codex，版本可能与 `codex --version` 不同。只在一处改动配置时，
+  两边都会读到同一份 `config.toml` —— 一边能加载、另一边报 `FeatureToml` 错误是可能的，先 `codex update` 并更新 App。
 - project 模式的 `.codex/config.toml` 只对**受信任项目**生效，首次进入需在 Codex 里确认信任。
 - 本工具只写配置，不验证效果。要确认子代理真的落到你钉的模型：开一个**新会话**让它派生一个子代理，
   然后读 `~/.codex/sessions/YYYY/MM/DD/rollout-*.jsonl` —— 子代理线程首行的

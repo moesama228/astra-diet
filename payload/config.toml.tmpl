@@ -8,9 +8,12 @@ enabled = true
 # 父代理等待子代理的时间上限。默认 30000（30 秒）会让父代理每 30 秒醒来一次并重读整份上下文；
 # 一次实测里 47 次空轮询占掉了父线程 68% 的输入。这里用 25 分钟，刻意留在提示缓存
 # 30 分钟保留下限之内——GPT-5.6 起缓存写入本身也额外计费，所以"醒来次数"直接等于钱。
+#
+# 这三个键自 codex-cli 0.140 起就存在，是兼容性最好的一档。
+# 注意：本表带 deny_unknown_fields —— 往里加任何当前版本不认识的键，都会让整个 config.toml
+# 加载失败（报 "data did not match any variant of untagged enum FeatureToml"）。
+# 安装器会在写入前用目标 Codex 实测一次，不通过就不落盘。
 min_wait_timeout_ms = {{WAIT_MS}}
 default_wait_timeout_ms = {{WAIT_MS}}
 max_wait_timeout_ms = {{WAIT_MS}}
-# 不让父代理挑选子代理的模型与档位：子代理一律走角色文件的钉位。
-expose_spawn_agent_model_overrides = false
 # END astra-diet
