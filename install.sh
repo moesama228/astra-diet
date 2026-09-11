@@ -26,8 +26,8 @@ MODE=""
 PROJECT=""
 CODEX_HOME_OVERRIDE=""
 ROOT_MODEL="gpt-6-astra"
-ROOT_EFFORT="low"
-SUB_MODEL="gpt-5.6-luna"
+ROOT_EFFORT="medium"
+SUB_MODEL="gpt-5.6-sol"
 SUB_EFFORT="medium"
 WAIT_MINUTES="25"
 INSTALL_AGENTS_MD=1
@@ -48,8 +48,8 @@ astra-diet — 安装 Codex 省用量配置
 
 参数
       --root-model <name>     根代理模型（默认 gpt-6-astra）
-      --root-effort <level>   根代理档位 low|medium|high|xhigh（默认 low）
-      --sub-model <name>      子代理模型（默认 gpt-5.6-luna）
+      --root-effort <level>   根代理档位 low|medium|high|xhigh（默认 medium）
+      --sub-model <name>      子代理模型（默认 gpt-5.6-sol）
       --sub-effort <level>    子代理档位（默认 medium）
       --wait-minutes <n>      父代理等待子代理的上限分钟数（默认 25）
       --no-agents-md          不安装 AGENTS.md 纪律区块

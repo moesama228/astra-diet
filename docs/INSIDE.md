@@ -1,7 +1,7 @@
 # INSIDE：每一项配置为什么这么设
 
 依据分三类，正文里标出：**实测**（本机真机 spawn + 读 rollout）、**源码**（openai/codex 对应版本读函数体）、**社区**（多人复现的公开报告）。
-环境基准：`codex-cli 0.154.0`，root `gpt-6-astra` / `low`。
+环境基准：`codex-cli 0.154.0`，root `gpt-6-astra`。
 
 ---
 
@@ -40,7 +40,7 @@
 
 - 实测（A/B 真机对照）：默认 `true` 时父代理能填 `model` / `reasoning_effort`；设成 `false` 时它的调用里只剩 `task_name` / `fork_turns` / `agent_type`，子代理的模型与档位**只能**来自角色文件。
 - 本工具默认**不写这个键**，即保留 `true`：需要时父代理（或你）可以显式把某个子代理升到更强 / 更贵的模型，例如疑难 bug、跨系统设计这类任务。
-- "默认不烧 Astra" 由 `agents/default.toml` 的钉位负责（泛型派生一律 Luna/medium），"需要时才升级"由显式调用负责。二者分工明确，互不冲突。
+- "默认不烧 Astra" 由 `agents/default.toml` 的钉位负责（泛型派生一律走它的 `model` / `model_reasoning_effort`，默认 `gpt-5.6-sol` / `medium`），"需要时才升级"由显式调用负责。二者分工明确，互不冲突。
 - 想彻底钉死（父代理无权升级），手动加一行 `expose_spawn_agent_model_overrides = false`。
 - **版本注意**：该键自 `codex-cli 0.147` 起才存在。本表带 `deny_unknown_fields`，把它写到更早的版本上会让**整份 config 加载失败**（报 `data did not match any variant of untagged enum FeatureToml`）。等待三件套自 0.140 起就有。
 
@@ -77,7 +77,9 @@
 装在 `$CODEX_HOME/agents/default.toml`（global）或 `<repo>/.codex/agents/default.toml`（project）。
 
 - **名字必须是 `default`。** 不传 `agent_type` 的泛型派生会解析成内置角色 `default`，这是唯一会被自动加载的角色名。其它名字必须显式传 `agent_type` 才生效。
-- **`model` / `model_reasoning_effort`** —— 钉死子代理的成本。`medium` 而非 `max`：社区一致反馈 Luna 的 `max` 会过度设计、明显变慢；而一个带遥测的实测样本显示推理 token 在总量里占比极小，调档主要影响**墙钟时间**而不是 token 成本。真正决定成本的是"要不要返工"。
+- **`model` / `model_reasoning_effort`** —— 钉死子代理的成本，默认 `gpt-5.6-sol` / `medium`。
+  - 档位取 `medium` 而非 `max`：社区一致反馈子代理开 `max` 会过度设计、明显变慢；而一个带遥测的实测样本显示推理 token 在总量里占比极小，调档主要影响**墙钟时间**，不是 token 成本。真正决定账单的是"要不要返工"。
+  - 模型默认用 Sol 而非更便宜的 Luna：按公开价，Sol 约 $4 / $20（每百万输入 / 输出 token），Astra 约 $10 / $50，而 Luna 约 $0.20 / $1.20 —— Sol 比 Astra 便宜一个量级、比 Luna 贵约 20 倍。选 Sol 是拿单价换"一次做对"的概率，因为子代理返工一次的代价远大于这点单价差。想更省：`--sub-model gpt-5.6-luna`。
 - **`sandbox_mode = "read-only"`** —— 探索交给子代理，改动与最终验收留在主代理。只读同时限制了它跑偏的破坏半径。
 - **`developer_instructions`** —— 把"只读、单轮、不派生"和返回格式写进角色本身，而不是指望每次派发时都交代一遍。
 

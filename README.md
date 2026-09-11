@@ -91,8 +91,9 @@ bash tests/selftest.sh     # 53 项，全部在 /tmp 沙箱里跑，不碰真实
 
 **已验证到生产环境**（2026-09-10，全局安装后实测）：安装只给 `config.toml` 增加了受管区块（20 行 diff），
 用户原有的 38 个 `[projects.*]`、MCP、plugins、`[desktop]`、`[tui]` 全部原样；泛型派生的子代理从
-"继承 Astra" 变成 `role=default / gpt-5.6-luna / medium`，且 `spawn_agent` 参数里不再出现 `model` /
-`reasoning_effort`（`expose_spawn_agent_model_overrides = false` 生效）。
+"继承 Astra" 变成走角色文件的钉位（实测时角色文件为 `role=default / gpt-5.6-luna / medium`），
+且 `spawn_agent` 参数里不再出现 `model` / `reasoning_effort`（当 `expose_spawn_agent_model_overrides`
+被显式设为 `false` 时；本工具默认不写该键，即保留父代理显式升级子代理的余地）。
 
 **仍未覆盖**：`AGENTS.md` 的"追加到已有用户内容"分支（安装时该文件不存在，走的是新建分支）；
 真实卸载只验过 dry-run 与沙箱。

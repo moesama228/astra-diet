@@ -141,10 +141,12 @@ def plan_config(existing: str, *, root_model, root_effort, wait_ms, block: str):
     """Return (new_text, changes[list[dict]])."""
     changes = []
     text = existing
-    for key, value in (("model", f'"{root_model}"'),
-                       ("model_reasoning_effort", f'"{root_effort}"')):
+    # 逆序插入：缺失的顶层键是逐个前插的，倒过来迭代才能让 model 落在最前面。
+    for key, value in (("model_reasoning_effort", f'"{root_effort}"'),
+                       ("model", f'"{root_model}"')):
         text, op, detail = set_root_scalar(text, key, value)
         changes.append({"op": op, "detail": detail})
+    changes.reverse()
 
     if "[agents]" in text:
         text, op, detail = set_section_key(text, "agents", "enabled", "true")
@@ -284,7 +286,7 @@ def render_changes(path: Path, label: str, changes, diff: str) -> str:
 
 # ---------------------------------------------------------------- entry points
 def _unquote(v: str) -> str:
-    """Tolerate values pasted from a TOML snippet, e.g. --sub-model '"gpt-5.6-luna"'."""
+    """Tolerate values pasted from a TOML snippet, e.g. --sub-model '"gpt-5.6-sol"'."""
     v = (v or "").strip()
     if len(v) >= 2 and v[0] == v[-1] and v[0] in "\"'":
         return v[1:-1]
