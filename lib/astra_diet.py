@@ -286,7 +286,7 @@ def render_changes(path: Path, label: str, changes, diff: str) -> str:
 
 # ---------------------------------------------------------------- entry points
 def _unquote(v: str) -> str:
-    """Tolerate values pasted from a TOML snippet, e.g. --sub-model '"gpt-5.6-sol"'."""
+    """Tolerate values pasted from a TOML snippet, e.g. --sub-model '"gpt-6-sol"'."""
     v = (v or "").strip()
     if len(v) >= 2 and v[0] == v[-1] and v[0] in "\"'":
         return v[1:-1]

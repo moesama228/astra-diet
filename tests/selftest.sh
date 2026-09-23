@@ -53,7 +53,7 @@ chk "T2 root effort 已改" "grep -q '^model_reasoning_effort = \"medium\"' '$W/
 chk "T2 等待值已写" "grep -q 'default_wait_timeout_ms = 1500000' '$W/config.toml'"
 chk "T2 保留 [tui]/[projects]" "grep -q 'status_line' '$W/config.toml' && grep -q 'trust_level' '$W/config.toml'"
 chk "T2 default.toml 已建" "[ -f '$W/agents/default.toml' ]"
-chk "T2 子模型正确" "grep -q 'model = \"gpt-5.6-sol\"' '$W/agents/default.toml'"
+chk "T2 子模型正确" "grep -q 'model = \"gpt-6-sol\"' '$W/agents/default.toml'"
 chk "T2 子模型档位正确" "grep -q 'model_reasoning_effort = \"medium\"' '$W/agents/default.toml'"
 chk "T2 verify 通过" "$PY '$LIB' verify --codex-home '$W' >/dev/null"
 chk "T2 报告 AGENTS.md 被跳过" "grep -q 'no-agents-md' '$OUT/last.out'"
